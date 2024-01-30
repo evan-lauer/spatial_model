@@ -19,7 +19,7 @@ STEP_SIZE = 1                                     # step size: days
 SIMULATION_DURATION = 365 * 2                         # simulation length: days
 NUM_STEPS = int(SIMULATION_DURATION / STEP_SIZE)  # number of steps
 NUM_FUNGI = 4                                     # number of fungi we are modeling
-FUNGI_NAMES = ["p.rufa.acer.n", "p.pend.n", "a.tab.s", "a.gal6.n"]       # names of the fungi we are modeling
+FUNGI_NAMES = ["p.rufa.acer.n", "p.gilv.n", "p.har.n", "p.robin.n"]       # names of the fungi we are modeling
 CLIMATE_TYPE = "medium"                           # either "low", "medium", "high"
 
 # Fixed constants to be used as parameters within our dif eqs
