@@ -40,6 +40,8 @@ water_potential = INITIAL_WATER_POTENTIAL                          # water poten
 # so we use a 2-dimensional array. There's an array for every time step of length NUM_FUNGI.
 fungal_radii_historical = np.ndarray(shape=(NUM_STEPS, NUM_FUNGI))     # 2d array, where each array[i] represents every fungus' radii at time step i
 
+ground_cover_historical = np.zeros(SIMULATION_DURATION)
+
 # This initializes our decomposition array. For every fungus, it represents the total quantity
 # of wood that the fungus could possibly consume in a day
 DECOMPOSITION_MODE = "mean"
@@ -50,11 +52,12 @@ total_fungal_decomposition = sum(fungal_decomposition)
 
 # TODO: Create the full size combat matrix (ie, (i,j) represents the outcome of i fighting j)
 # for now we use a temp matrix
-combat_matrix = np.array([[0, 1, -1, 1],[-1,0, 0, 1],[1, 0, 1, 0],[1, -1, 1, -1]]) # this represents the fact the p.rufa beats p.pend in direct combat trials
+combat_matrix = np.array([[0, 1, 1, 1],[-1,-1, 0, -1],[-1, 0, 1, 0],[-1, -1, 1, -1]]) # this represents the fact the p.rufa beats p.pend in direct combat trials
 
 # This is the main Euler approx. loop
 
 for day in range(SIMULATION_DURATION):
+  ground_cover_historical[day] = ground_cover
   water_potential = WATER_POTENTIAL_ARRAY[day % 365]
   decomposition_term = 0
   for i in range(NUM_FUNGI):
@@ -93,14 +96,19 @@ for day in range(SIMULATION_DURATION):
   for i in range(NUM_FUNGI):
     if fungal_radii[i] < 0:
       fungal_radii[i] = FUNGI_INITIAL_RADIUS
+    elif fungal_radii[i] > 564:
+      fungal_radii[i] = 560
 
   
 
 plottable = np.transpose(fungal_radii_historical)
-plt.plot(plottable[0],label='Fungus 1')
-plt.plot(plottable[0] + plottable[1],label='Fungus 2')
-plt.plot(plottable[0] + plottable[1] + plottable[2],label='Fungus 3')
-plt.plot(plottable[0] + plottable[1] + plottable[2] + plottable[3],label='Fungus 4')
+plt.subplot(2, 1, 1)  # 2 rows, 1 column, first subplot
+
+
+plt.plot(plottable[0], label='Fungus 1')
+plt.plot(plottable[0] + plottable[1], label='Fungus 2')
+plt.plot(plottable[0] + plottable[1] + plottable[2], label='Fungus 3')
+plt.plot(plottable[0] + plottable[1] + plottable[2] + plottable[3], label='Fungus 4')
 
 plt.fill_between(range(len(plottable[0])), 0, plottable[0], alpha=0.3, color='blue')
 plt.fill_between(range(len(plottable[0])), plottable[0], plottable[0] + plottable[1], alpha=0.3, color='orange')
@@ -111,7 +119,12 @@ plt.xlabel('Days Elapsed')
 plt.ylabel('Hyphal Radius (mm)')
 plt.title("Hyphal Extension Rate Over Time")
 
-plt.text(0.5, -0.2, 'Competition between p.rufa.acer.n, p.pend.n, a.tab.s, a.gal6.n.', ha='center', va='center', transform=plt.gca().transAxes, fontsize=12)
 
 plt.legend()
+
+plt.subplot(2, 1, 2)  # 2 rows, 1 column, second subplot
+plt.plot(ground_cover_historical, label='Ground Cover')
+plt.xlabel('Days Elapsed')
+plt.ylabel('Ground Cover (mm^2)')
+
 plt.show()
