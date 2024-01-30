@@ -19,7 +19,7 @@ STEP_SIZE = 1                                     # step size: days
 SIMULATION_DURATION = 365 * 2                         # simulation length: days
 NUM_STEPS = int(SIMULATION_DURATION / STEP_SIZE)  # number of steps
 NUM_FUNGI = 4                                     # number of fungi we are modeling
-FUNGI_NAMES = ["p.rufa.acer.n", "p.gilv.n", "p.har.n", "p.robin.n"]       # names of the fungi we are modeling
+FUNGI_NAMES = ["p.rufa.acer.n", "p.pend.n", "a.tab.s", "a.gal6.n"]       # names of the fungi we are modeling
 CLIMATE_TYPE = "medium"                           # either "low", "medium", "high"
 
 # Fixed constants to be used as parameters within our dif eqs
@@ -52,7 +52,7 @@ total_fungal_decomposition = sum(fungal_decomposition)
 
 # TODO: Create the full size combat matrix (ie, (i,j) represents the outcome of i fighting j)
 # for now we use a temp matrix
-combat_matrix = np.array([[0, 1, 1, 1],[-1,-1, 0, -1],[-1, 0, 1, 0],[-1, -1, 1, -1]]) # this represents the fact the p.rufa beats p.pend in direct combat trials
+combat_matrix = np.array([[0, 1, -1, 1],[-1,0, 0, 1],[1, 0, 1, 0],[1, -1, 1, -1]]) # this represents the fact the p.rufa beats p.pend in direct combat trials
 
 # This is the main Euler approx. loop
 
@@ -77,14 +77,14 @@ for day in range(SIMULATION_DURATION):
 
         if combat_matrix[i][j] == 0:
           if (random.randint(1,10) < 2):
-            overlap_factor = .015 * math.pi * (fungal_radii[j] ** 2) * (fungal_radii[i] ** 2) / (SURFACE_SIZE)
+            overlap_factor = .0015 * math.pi * (fungal_radii[j] ** 2) * (fungal_radii[i] ** 2) / (SURFACE_SIZE)
           else:
-            overlap_factor = .00525 *math.pi * (fungal_radii[j] ** 2) * (fungal_radii[i] ** 2) / (SURFACE_SIZE)
+            overlap_factor = .000525 *math.pi * (fungal_radii[j] ** 2) * (fungal_radii[i] ** 2) / (SURFACE_SIZE)
         elif combat_matrix[i][j] == -1:
           if (random.randint(1,10) < 2):
-            overlap_factor = .00525 *math.pi * (fungal_radii[j] ** 2) * (fungal_radii[i] ** 2) / (SURFACE_SIZE)
+            overlap_factor = .000525 *math.pi * (fungal_radii[j] ** 2) * (fungal_radii[i] ** 2) / (SURFACE_SIZE)
           else:
-            overlap_factor = .015 * math.pi * (fungal_radii[j] ** 2) * (fungal_radii[i] ** 2) / (SURFACE_SIZE)
+            overlap_factor = .0015 * math.pi * (fungal_radii[j] ** 2) * (fungal_radii[i] ** 2) / (SURFACE_SIZE)
 
 
         d_fungal_radii[i] -= overlap_factor * get_hyphal_ext_rate_by_moisture(FUNGI_NAMES[i], water_potential) * get_moisture_strength_factor(FUNGI_NAMES[i], water_potential) 
