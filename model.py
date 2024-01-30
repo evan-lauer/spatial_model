@@ -74,14 +74,14 @@ for day in range(SIMULATION_DURATION):
 
         if combat_matrix[i][j] == 0:
           if (random.randint(1,10) < 2):
-            overlap_factor = .0015 * math.pi * (fungal_radii[j] ** 2) * (fungal_radii[i] ** 2) / (SURFACE_SIZE)
+            overlap_factor = .015 * math.pi * (fungal_radii[j] ** 2) * (fungal_radii[i] ** 2) / (SURFACE_SIZE)
           else:
-            overlap_factor = .000525 *math.pi * (fungal_radii[j] ** 2) * (fungal_radii[i] ** 2) / (SURFACE_SIZE)
+            overlap_factor = .00525 *math.pi * (fungal_radii[j] ** 2) * (fungal_radii[i] ** 2) / (SURFACE_SIZE)
         elif combat_matrix[i][j] == -1:
           if (random.randint(1,10) < 2):
-            overlap_factor = .000525 *math.pi * (fungal_radii[j] ** 2) * (fungal_radii[i] ** 2) / (SURFACE_SIZE)
+            overlap_factor = .00525 *math.pi * (fungal_radii[j] ** 2) * (fungal_radii[i] ** 2) / (SURFACE_SIZE)
           else:
-            overlap_factor = .0015 * math.pi * (fungal_radii[j] ** 2) * (fungal_radii[i] ** 2) / (SURFACE_SIZE)
+            overlap_factor = .015 * math.pi * (fungal_radii[j] ** 2) * (fungal_radii[i] ** 2) / (SURFACE_SIZE)
 
 
         d_fungal_radii[i] -= overlap_factor * get_hyphal_ext_rate_by_moisture(FUNGI_NAMES[i], water_potential) * get_moisture_strength_factor(FUNGI_NAMES[i], water_potential) 
