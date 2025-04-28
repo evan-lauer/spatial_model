@@ -4,6 +4,8 @@ import matplotlib.pyplot as plt
 import math
 import warnings
 import random
+# import matplotlib.pyplot as plt
+# plt.switch_backend('AGG')
 from data_manipulation import get_hyphal_ext_rate_by_moisture, get_fungus_name, get_decomposition_rate, get_moisture_strength_factor
 from moisture import get_moisture_array
 # We have some annoying warnings that come up, so I'm suppressing them.
@@ -16,16 +18,16 @@ WATER_POTENTIAL_ARRAY = get_moisture_array()
 # Parameters for the Euler approximation of the dif eqs
 # Ideally SIMULATION_DURATION is divisible by STEP_SIZE
 STEP_SIZE = 1                                     # step size: days
-SIMULATION_DURATION = 365 * 2                         # simulation length: days
+SIMULATION_DURATION = 200                         # simulation length: days
 NUM_STEPS = int(SIMULATION_DURATION / STEP_SIZE)  # number of steps
 NUM_FUNGI = 4                                     # number of fungi we are modeling
-FUNGI_NAMES = ["p.rufa.acer.n", "p.pend.n", "a.tab.s", "a.gal6.n"]       # names of the fungi we are modeling
+FUNGI_NAMES = ["p.rufa.acer.n", "p.gilv.n", "p.har.n", "p.robin.n"]       # names of the fungi we are modeling
 CLIMATE_TYPE = "medium"                           # either "low", "medium", "high"
 
 # Fixed constants to be used as parameters within our dif eqs
 SURFACE_INITIAL_COVER = 500000             # starting amount of ground cover: mm^2
 SURFACE_SIZE = 1000000                     # simulation surface size: mm^2
-SURFACE_NEW_COVER = 200                    # new ground cover of dead matter per day: mm^2/day
+SURFACE_NEW_COVER = 200000                    # new ground cover of dead matter per day: mm^2/day
 FUNGI_INITIAL_RADIUS = 1                   # starting radius of each fungus: mm
 INITIAL_WATER_POTENTIAL = -1.0             # starting water potential of the system: MPa
 
@@ -52,18 +54,21 @@ total_fungal_decomposition = sum(fungal_decomposition)
 
 # TODO: Create the full size combat matrix (ie, (i,j) represents the outcome of i fighting j)
 # for now we use a temp matrix
-combat_matrix = np.array([[0, 1, -1, 1],[-1,0, 0, 1],[1, 0, 1, 0],[1, -1, 1, -1]]) # this represents the fact the p.rufa beats p.pend in direct combat trials
+combat_matrix = np.array([[0, 1, 1, 1],[-1,-1, 0, -1],[-1, 0, 1, 0],[-1, -1, 1, -1]]) # this represents the fact the p.rufa beats p.pend in direct combat trials
 
 # This is the main Euler approx. loop
 
 for day in range(SIMULATION_DURATION):
+  ground_cover = round(ground_cover)
+  if ground_cover > SURFACE_SIZE:
+    ground_cover = SURFACE_SIZE
   ground_cover_historical[day] = ground_cover
   water_potential = WATER_POTENTIAL_ARRAY[day % 365]
   decomposition_term = 0
   for i in range(NUM_FUNGI):
     # This calculates d_i for each mushroom (the product of the ground cover, the proportion of decomposition potential, and the
     # weighted moisture strength term)
-    decomposition_term += (ground_cover / SURFACE_SIZE) * get_moisture_strength_factor(FUNGI_NAMES[i], water_potential)
+    decomposition_term += (ground_cover) * (fungal_decomposition[i]/total_fungal_decomposition) * get_moisture_strength_factor(FUNGI_NAMES[i], water_potential)
   d_ground_cover = SURFACE_NEW_COVER - decomposition_term
   d_fungal_radii = np.zeros(NUM_FUNGI)
   for i in range(NUM_FUNGI):
